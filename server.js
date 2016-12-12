@@ -49,12 +49,12 @@ apiRoutes.post('/login', function(req, res) {
 		if (err) throw err;
 
 		if (!user) {
-			res.json({ success: false, message: 'Authentication failed. User not found.' });
+			res.status(404).send({ success: false,message: 'Authentication failed. User not found.' });
 		} else if (user) {
 
 			// check if password matches
 			if (user.password != req.body.password) {
-				res.json({ success: false, message: 'Authentication failed. Wrong password.' });
+				res.status(404).send({ success: false,message: 'Authentication failed. Wrong password.' });
 			} else {
 
 				// if user is found and password is right
@@ -65,8 +65,9 @@ apiRoutes.post('/login', function(req, res) {
 
 				res.json({
 					success: true,
-					message: 'Enjoy your token!',
-					token: token
+					message: 'successfully login',
+					token: token,
+					user: user
 				});
 			}		
 
