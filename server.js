@@ -7,7 +7,6 @@ var mongoose    = require('mongoose');
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var config = require('./config'); // get our config file
 var User   = require('./app/models/user'); // get our mongoose model
-
 var port = process.env.PORT || 80;
 mongoose.connect(config.database);
 app.set('superSecret', config.secret);
@@ -25,18 +24,25 @@ var apiRoutes = express.Router();
 
 apiRoutes.post('/register', function(req, res) {
 	if(req.body.name!=="" && req.body.password!=""){
-		var nick = new User({
-			name: req.body.name, 
-			password: req.body.password
-		});
-		nick.save(function(err) {
-			if (err) throw err;
+		console.log(req.body.name);
+		User.findOne({name: req.body.name},function(err, user){
+			if(user!=null){
+				res.status(400).send({ success: false,message: 'User Already Exists..' });
+			}else{
+				var nick = new User({
+					name: req.body.name,
+					password: req.body.password
+				});
+				nick.save(function(err) {
+					if (err) throw err;
 
-			console.log('User saved successfully');
-			res.json({ success: true,message: 'User Created..' });
-		});
+					console.log('User saved successfully');
+					res.json({ success: true,message: 'User Created..' });
+				});
+			}
+		})
 	}else{
-		res.status(404).send({ success: true,message: 'Something Went Wrong..' });
+		res.status(404).send({ success: false,message: 'Something Went Wrong..' });
 	}
 });
 
