@@ -25,7 +25,6 @@ var apiRoutes = express.Router();
 apiRoutes.post('/register', function(req, res) {
 	if(req.body.name!=="" && req.body.password!="" && req.body.password!=undefined && req.body.name!=undefined){
 		User.findOne({name: req.body.name},function(err, user){
-			console.log(user);
 			if(user!=null){
 				res.status(400).send({ success: false,message: 'User Already Exists..' });
 			}else{
@@ -35,8 +34,6 @@ apiRoutes.post('/register', function(req, res) {
 				});
 				nick.save(function(err) {
 					if (err) throw err;
-
-					console.log('User saved successfully');
 					res.json({ success: true,message: 'User Created..' });
 				});
 			}
@@ -51,14 +48,11 @@ apiRoutes.post('/login', function(req, res) {
 		User.findOne({
 			name: req.body.name
 		}, function(err, user) {
-			console.log("login "+user);
 			if (err) throw err;
 
 			if (!user) {
 				res.status(404).send({ success: false,message: 'Authentication failed. User not found.' });
 			} else if (user) {
-				console.log("userpass "+ user.password);
-				console.log("sendedpass "+ req.body.password);
 				// check if password matches
 				if (user.password != req.body.password) {
 					res.status(404).send({ success: false,message: 'Authentication failed. Wrong password.' });
