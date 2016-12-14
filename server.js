@@ -26,6 +26,7 @@ apiRoutes.post('/register', function(req, res) {
 	if(req.body.name!=="" && req.body.password!=""){
 		console.log(req.body.name);
 		User.findOne({name: req.body.name},function(err, user){
+			console.log(user);
 			if(user!=null){
 				res.status(400).send({ success: false,message: 'User Already Exists..' });
 			}else{
@@ -47,17 +48,18 @@ apiRoutes.post('/register', function(req, res) {
 });
 
 apiRoutes.post('/login', function(req, res) {
-
+	console.log("login "+req.body.name);
 	User.findOne({
 		name: req.body.name
 	}, function(err, user) {
-
+		console.log("login "+user);
 		if (err) throw err;
 
 		if (!user) {
 			res.status(404).send({ success: false,message: 'Authentication failed. User not found.' });
 		} else if (user) {
-
+			console.log("userpass "+ user.password);
+			console.log("sendedpass "+ req.body.password);
 			// check if password matches
 			if (user.password != req.body.password) {
 				res.status(404).send({ success: false,message: 'Authentication failed. Wrong password.' });
