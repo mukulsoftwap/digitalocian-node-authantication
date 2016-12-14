@@ -23,8 +23,7 @@ app.get('/', function(req, res) {
 var apiRoutes = express.Router(); 
 
 apiRoutes.post('/register', function(req, res) {
-	if(req.body.name!=="" && req.body.password!=""){
-		console.log(req.body.name);
+	if(req.body.name!=="" && req.body.password!="" && req.body.password!=undefined && req.body.name!=undefined){
 		User.findOne({name: req.body.name},function(err, user){
 			console.log(user);
 			if(user!=null){
@@ -48,40 +47,43 @@ apiRoutes.post('/register', function(req, res) {
 });
 
 apiRoutes.post('/login', function(req, res) {
-	console.log("login "+req.body.name);
-	User.findOne({
-		name: req.body.name
-	}, function(err, user) {
-		console.log("login "+user);
-		if (err) throw err;
+	if(req.body.password!=undefined && req.body.name!=undefined){
+		User.findOne({
+			name: req.body.name
+		}, function(err, user) {
+			console.log("login "+user);
+			if (err) throw err;
 
-		if (!user) {
-			res.status(404).send({ success: false,message: 'Authentication failed. User not found.' });
-		} else if (user) {
-			console.log("userpass "+ user.password);
-			console.log("sendedpass "+ req.body.password);
-			// check if password matches
-			if (user.password != req.body.password) {
-				res.status(404).send({ success: false,message: 'Authentication failed. Wrong password.' });
-			} else {
+			if (!user) {
+				res.status(404).send({ success: false,message: 'Authentication failed. User not found.' });
+			} else if (user) {
+				console.log("userpass "+ user.password);
+				console.log("sendedpass "+ req.body.password);
+				// check if password matches
+				if (user.password != req.body.password) {
+					res.status(404).send({ success: false,message: 'Authentication failed. Wrong password.' });
+				} else {
 
-				// if user is found and password is right
-				// create a token
-				var token = jwt.sign(user, app.get('superSecret'), {
-					expiresIn: 86400 // expires in 24 hours
-				});
+					// if user is found and password is right
+					// create a token
+					var token = jwt.sign(user, app.get('superSecret'), {
+						expiresIn: 86400 // expires in 24 hours
+					});
 
-				res.json({
-					success: true,
-					message: 'successfully login',
-					token: token,
-					user: user
-				});
-			}		
+					res.json({
+						success: true,
+						message: 'successfully login',
+						token: token,
+						user: user
+					});
+				}		
 
-		}
+			}
 
-	});
+		});
+	}else{
+		res.status(404).send({ success: false,message: 'Something Went Wrong..' });
+	}
 });
 
 apiRoutes.use(function(req, res, next) {
